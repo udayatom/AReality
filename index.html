@@ -1,5 +1,4 @@
 <html>
-
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -88,26 +87,6 @@
       color: white;
     }
 
-    #example-scanning-overlay .inner .scanline {
-      position: absolute;
-      width: 100%;
-      height: 10px;
-      background: white;
-      animation: move 3s linear infinite;
-    }
-
-    @keyframes move {
-
-      0%,
-      100% {
-        top: 0%
-      }
-
-      50% {
-        top: calc(100% - 10px)
-      }
-    }
-
     #cameraNotPermitted {
       transform: translate(-50%, -50%);
       position: absolute;
@@ -138,12 +117,10 @@
 </head>
 
 <body>
-  <!-- Since we will be playing a video with audio, we need a user interaction first hence this div -->
   <div id="startContainer" class="container" onclick="startAR()">
     <h1 id="startText">Tap to Start</h1>
   </div>
 
-  <!-- Container for the image to be scanned example -->
   <div class="example-container">
     <div id="example-scanning-overlay" class="hidden">
       <div class="inner">
@@ -154,119 +131,64 @@
     </div>
     <img id="cameraNotPermitted" src="./assets/CameraNotPermitted.png" />
 
-
-    <!-- Replace the file name here: 'mindar-image="imageTargetSrc: ./assets/YOUR_FILE_NAME.mind;' -->
     <a-scene
       mindar-image="imageTargetSrc: ./assets/BharatXRNewSticker.mind; autoStart: true; showStats: false; uiScanning: #example-scanning-overlay; filterMinCF:0.0001; filterBeta: 0.001"
       loading-screen="dotsColor: red; backgroundColor: black; enabled: false" gesture-detector color-space="sRGB"
       renderer="colorManagement: true, physicallyCorrectLights, logarithmicDepthBuffer: true"
       xr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
 
-      <!-- This is where all your photos & videos will be added as normal img and video tags -->
       <a-assets>
-        <!-- Use img instead of video tag -->
-        <img id="myImage" src="./assets/tenor.gif" />
+        <!-- Load the GIF image as a texture -->
+        <img id="myGif" src="./assets/tenor.gif" />
       </a-assets>
 
-      <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"
-        raycaster="far: ${customFields.libVersion}; objects: .clickable"></a-camera>
+      <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="far: 50; objects: .clickable"></a-camera>
 
       <a-entity id="aentity" mytarget mindar-image-target="targetIndex: 0" class="clickable">
-
-        <!-- Change the src to the ID of the image element added in <a-assets> -->
-        <a-plane id="myImagePlane" src="#myImage" material="transparent: false; opacity: 1" position="0 0 0"
-          width="1.025" height="1.025" rotation="0 0 0"
-          animation="property: opacity; from: 0.0; to: 1.0; loop: false; dur: 500; autoplay: false; startEvents: bganimstart"></a-plane>
-
+        <!-- Use the GIF texture on a plane -->
+        <a-plane id="myImagePlane" src="#myGif" material="transparent: false; opacity: 1" position="0 0 0"
+          width="1.025" height="1.025" rotation="0 0 0"></a-plane>
       </a-entity>
     </a-scene>
-
   </div>
 
   <script>
-    ; (function () {
-      var src = 'https://cdnjs.cloudflare.com/ajax/libs/eruda/2.4.1/eruda.min.js';
-      if (!/eruda=true/.test(window.location) && localStorage.getItem('active-eruda') != 'true') return;
-      document.write('<scr' + 'ipt src="' + src + '"></scr' + 'ipt>');
-      document.write('<scr' + 'ipt>eruda.init();</scr' + 'ipt>');
-    })();
-
     const sceneEl = document.querySelector('a-scene');
-    let arSystem; let animated = false;
+    let arSystem;
     sceneEl.addEventListener('loaded', function () {
       arSystem = sceneEl.systems["mindar-image-system"];
-      console.log('Loaded')
+      console.log('Loaded');
     });
 
-    if ('mediaDevices' in navigator && 'getUserMedia' in navigator.mediaDevices) {
-      console.log("Permissions Granted")
-    }
-
-    document.getElementById('myImage').autoplay = false;
-
-    var constraints = {
-      video: true,
-      audio: false
-    }
-
-    // Checking for Camera permission
+    // Camera permission check
+    var constraints = { video: true, audio: false };
     setInterval(function () {
       navigator.permissions.query({ name: 'camera' }).then(function (result) {
-        if (result.state === 'granted') {
-          //permission has already been granted, no prompt is shown
-        } else if (result.state === 'prompt') {
-          //there's no peristent permission registered, will be showing the prompt
-        } else if (result.state === 'denied') {
-          //permission has been denied, show error for 5 seconds and then refresh the page
-          window.navigator.mediaDevices.getUserMedia(constraints)
-            .then((stream) => {
-              console.log('Camera Access Permitted')
-            })
-            .catch((err) => {
-              console.log('Camera Access Denied')
-              document.getElementById('cameraNotPermitted').style.visibility = 'visible'
-              setTimeout(function () {
-                window.location.reload();
-              }, 5000)
-            });
+        if (result.state === 'denied') {
+          document.getElementById('cameraNotPermitted').style.visibility = 'visible';
+          setTimeout(function () { window.location.reload(); }, 5000);
         }
       });
-    }, 1000)
+    }, 1000);
 
-    sceneEl.addEventListener("arReady", (event) => {
-      console.log("MindAR is ready")
-    });
-    var executed = false;
-
+    // Start AR on tap
     function startAR() {
-      console.log('StartAR')
-      document.getElementById('startContainer').style.display = "none"
+      document.getElementById('startContainer').style.display = "none";
     }
-
 
     AFRAME.registerComponent('mytarget', {
       init: function () {
         this.el.addEventListener('targetFound', event => {
-          console.log("target found");
-
-          document.getElementById('example-scanning-overlay').style.display = 'none'
-          document.getElementById('scanText').style.display = 'none'
-
-          // Show the image when the target is found
-          var executed = false;
-          if (!executed) {
-            executed = true;
-            document.getElementById('myImagePlane').emit('bganimstart')
-          }
-
+          console.log("Target found");
+          document.getElementById('example-scanning-overlay').style.display = 'none';
+          document.getElementById('scanText').style.display = 'none';
         });
         this.el.addEventListener('targetLost', event => {
-          console.log("target lost");
-          document.getElementById('example-scanning-overlay').style.display = 'flex'
+          console.log("Target lost");
+          document.getElementById('example-scanning-overlay').style.display = 'flex';
         });
       }
     });
   </script>
 </body>
-
 </html>
