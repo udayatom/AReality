@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -37,76 +36,8 @@
       z-index: 2;
     }
 
-    @media (min-aspect-ratio: 1/1) {
-      #example-scanning-overlay .inner {
-        width: 50vh;
-        height: 50vh;
-      }
-    }
-
-    @media (max-aspect-ratio: 1/1) {
-      #example-scanning-overlay .inner {
-        width: 80vw;
-        height: 80vw;
-      }
-    }
-
-    #example-scanning-overlay .inner {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      opacity: 0.75;
-
-      background:
-        linear-gradient(to right, white 10px, transparent 10px) 0 0,
-        linear-gradient(to right, white 10px, transparent 10px) 0 100%,
-        linear-gradient(to left, white 10px, transparent 10px) 100% 0,
-        linear-gradient(to left, white 10px, transparent 10px) 100% 100%,
-        linear-gradient(to bottom, white 10px, transparent 10px) 0 0,
-        linear-gradient(to bottom, white 10px, transparent 10px) 100% 0,
-        linear-gradient(to top, white 10px, transparent 10px) 0 100%,
-        linear-gradient(to top, white 10px, transparent 10px) 100% 100%;
-      background-repeat: no-repeat;
-      background-size: 40px 40px;
-    }
-
     #example-scanning-overlay.hidden {
       display: none;
-    }
-
-    #example-scanning-overlay img {
-      width: 70%;
-      align-self: center;
-    }
-
-    #example-scanning-overlay h3 {
-      display: block;
-      position: absolute;
-      font-size: medium;
-      top: 105%;
-      align-self: center;
-      color: white;
-    }
-
-    #example-scanning-overlay .inner .scanline {
-      position: absolute;
-      width: 100%;
-      height: 10px;
-      background: white;
-      animation: move 3s linear infinite;
-    }
-
-    @keyframes move {
-
-      0%,
-      100% {
-        top: 0%;
-      }
-
-      50% {
-        top: calc(100% - 10px);
-      }
     }
 
     #cameraNotPermitted {
@@ -135,64 +66,95 @@
     h1 {
       color: whitesmoke;
     }
+
+    #playButton {
+      position: absolute;
+      bottom: 20px;
+      background-color: rgba(255, 0, 0, 0.7);
+      color: white;
+      font-size: 24px;
+      padding: 15px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: none;
+      z-index: 99999;
+    }
   </style>
 </head>
 
 <body>
+  <!-- Since we will be playing a video with audio, we need a user interaction first -->
   <div id="startContainer" class="container" onclick="startAR()">
     <h1 id="startText">Tap to Start</h1>
   </div>
 
+  <!-- Container for the image to be scanned example -->
   <div class="example-container">
     <div id="example-scanning-overlay" class="hidden">
       <div class="inner">
         <h3 id="scanText">Scan this image to get started</h3>
         <img src="./assets/Bharat XR Sticker.png" />
-        <div class="scanline"></div>
       </div>
     </div>
     <img id="cameraNotPermitted" src="./assets/CameraNotPermitted.png" />
 
+    <!-- A-scene setup -->
     <a-scene
       mindar-image="imageTargetSrc: ./assets/BharatXRNewSticker.mind; autoStart: true; showStats: false; uiScanning: #example-scanning-overlay; filterMinCF:0.0001; filterBeta: 0.001"
-      loading-screen="dotsColor: red; backgroundColor: black; enabled: false" gesture-detector color-space="sRGB"
-      renderer="colorManagement: true, physicallyCorrectLights, logarithmicDepthBuffer: true"
-      xr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+      loading-screen="dotsColor: red; backgroundColor: black; enabled: false" xr-mode-ui="enabled: false"
+      device-orientation-permission-ui="enabled: false">
 
       <a-assets>
-        <!-- Static image that shows over the AR target (optional) -->
-        <img id="video-thumbnail" src="https://img.youtube.com/vi/dQw4w9WgXcQ/0.jpg" />
+        <!-- Preload the video -->
+        <video id="myVideo" crossorigin="anonymous" preload="auto" loop="false" style="opacity: 1;"
+          src="https://www.youtube.com/watch?v=dQw4w9WgXcQ" playsinline></video>
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"
-        raycaster="far: 5; objects: .clickable"></a-camera>
+        raycaster="far: 10; objects: .clickable"></a-camera>
 
+      <!-- AR content setup -->
       <a-entity id="aentity" mytarget mindar-image-target="targetIndex: 0" class="clickable">
-        <a-plane src="#video-thumbnail" position="0 0 0" width="1.5" height="1" class="clickable"
-          onclick="openYouTube()">
-        </a-plane>
+        <!-- Video trigger -->
+        <a-plane id="myVideoPlane" src="#myVideo" material="transparent: false; opacity: 0" position="0 0 0"
+          width="1.025" height="1.025" rotation="0 0 0"
+          animation="property: opacity; from: 0.0; to: 1.0; loop: false; dur: 500; autoplay: false; startEvents: bganimstart"></a-plane>
       </a-entity>
     </a-scene>
+
   </div>
 
+  <!-- Play Button -->
+  <button id="playButton" onclick="playVideo()">Play Video</button>
+
   <script>
+    let executed = false;
+
     function startAR() {
+      console.log('StartAR');
       document.getElementById('startContainer').style.display = "none";
     }
 
-    function openYouTube() {
+    // Play button logic
+    function playVideo() {
       window.open('https://www.youtube.com/watch?v=dQw4w9WgXcQ', '_blank');
     }
 
     AFRAME.registerComponent('mytarget', {
       init: function () {
         this.el.addEventListener('targetFound', event => {
+          console.log("target found");
           document.getElementById('example-scanning-overlay').style.display = 'none';
           document.getElementById('scanText').style.display = 'none';
+
+          // Show Play button
+          document.getElementById('playButton').style.display = 'block';
         });
 
         this.el.addEventListener('targetLost', event => {
+          console.log("target lost");
           document.getElementById('example-scanning-overlay').style.display = 'flex';
+          document.getElementById('playButton').style.display = 'none';  // Hide Play button
         });
       }
     });
