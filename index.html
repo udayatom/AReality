@@ -166,23 +166,21 @@
       <!-- This is where all your photos & videos will be added as normal img and video tags -->
       <a-assets>
         <!-- Change the video in the src of this video tag -->
-        <!-- <video id="myVideo" crossorigin="anonymous" preload="auto" autoplay="false" loop style="opacity: 1;"
-          src="./assets/myVideo.MP4" playsinline></video> -->
-        <img id="myImage" src="./assets/zepto.webp" alt="My Image" />
+        <video id="myVideo" crossorigin="anonymous" preload="auto" autoplay="false" loop style="opacity: 1;"
+          src="./assets/myVideo.MP4" playsinline></video>
+      </a-assets>
 
-        <im </a-assets>
+      <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"
+        raycaster="far: ${customFields.libVersion}; objects: .clickable"></a-camera>
 
-          <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"
-            raycaster="far: ${customFields.libVersion}; objects: .clickable"></a-camera>
+      <a-entity id="aentity" mytarget mindar-image-target="targetIndex: 0" class="clickable">
 
-          <a-entity id="aentity" mytarget mindar-image-target="targetIndex: 0" class="clickable">
+        <!-- Change the src to the ID of the video element added in <a-assets> | Change the width and height as per the video ratio -->
+        <a-plane id="myVideoPlane" src="#myVideo" material="transparent: false; opacity: 0" position="0 0 0"
+          width="1.025" height="1.025" rotation="0 0 0"
+          animation="property: opacity; from: 0.0; to: 1.0; loop: false; dur: 500; autoplay: false; startEvents: bganimstart"></a-plane>
 
-            <!-- Change the src to the ID of the video element added in <a-assets> | Change the width and height as per the video ratio -->
-            <a-plane id="myVideoPlane" src="#myVideo" material="transparent: false; opacity: 0" position="0 0 0"
-              width="1.025" height="1.025" rotation="0 0 0"
-              animation="property: opacity; from: 0.0; to: 1.0; loop: false; dur: 500; autoplay: false; startEvents: bganimstart"></a-plane>
-
-          </a-entity>
+      </a-entity>
     </a-scene>
 
   </div>
