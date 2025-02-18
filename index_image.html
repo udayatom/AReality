@@ -1,5 +1,4 @@
 <html>
-
 <head>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <meta name="apple-mobile-web-app-capable" content="yes">
@@ -9,7 +8,6 @@
   <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/dist/mindar-image.prod.js"></script>
   <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-  <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>
 
   <style>
     body {
@@ -141,20 +139,15 @@
 
       <a-assets>
         <!-- Load the GIF image as a texture -->
-        <video id="greenscreenvideo" opacity="0" loop="true" autoplay playsinline webkit-playsinline
-          crossorigin="anonymous" muted="true"
-          src="https://cdn.glitch.global/f4977530-2465-4b1b-a249-2d4c1bb9844b/y2mate.com%20-%20Dancing%20Monkey%20Green%20Screen%20Status%20%20Green%20Screen%20Effects%20%20Chroma%20Key%20HD_480p.mp4?v=1693578478350"></video>
+        <img id="myGif" src="./assets/tenor.gif" />
       </a-assets>
 
-      </a-assets>
-
-      <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"
-        raycaster="far: 50; objects: .clickable"></a-camera>
+      <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="far: 50; objects: .clickable"></a-camera>
 
       <a-entity id="aentity" mytarget mindar-image-target="targetIndex: 0" class="clickable">
         <!-- Use the GIF texture on a plane -->
-        <a-video material="shader: chromakey; src: #greenscreenvideo; color: 0.1 0.9 0.2" position="0 0 0"
-          rotation="0 0 0" scale="1 1 1"></a-video>
+        <a-plane id="myImagePlane" src="#myGif" material="transparent: false; opacity: 1" position="0 0 0"
+          width="1.025" height="1.025" rotation="0 0 0"></a-plane>
       </a-entity>
     </a-scene>
   </div>
@@ -198,5 +191,4 @@
     });
   </script>
 </body>
-
 </html>
