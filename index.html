@@ -92,7 +92,6 @@
       position: absolute;
       width: 100%;
       height: 10px;
-      /* opacity: 0.75; */
       background: white;
       animation: move 3s linear infinite;
     }
@@ -148,8 +147,8 @@
   <div class="example-container">
     <div id="example-scanning-overlay" class="hidden">
       <div class="inner">
-        <h3 id="scanText">Scan this image to get started</h3> <!-- Change this text as per your liking -->
-        <img src="./assets/Bharat XR Sticker.png" /> <!-- Change the src with your target image -->
+        <h3 id="scanText">Scan this image to get started</h3>
+        <img src="./assets/Bharat XR Sticker.png" />
         <div class="scanline"></div>
       </div>
     </div>
@@ -165,9 +164,8 @@
 
       <!-- This is where all your photos & videos will be added as normal img and video tags -->
       <a-assets>
-        <!-- Change the video in the src of this video tag -->
-        <video id="myVideo" crossorigin="anonymous" preload="auto" autoplay="false" loop style="opacity: 1;"
-          src="./assets/myVideo.MP4" playsinline></video>
+        <!-- Use img instead of video tag -->
+        <img id="myImage" src="./assets/newimage.webp" />
       </a-assets>
 
       <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"
@@ -175,8 +173,8 @@
 
       <a-entity id="aentity" mytarget mindar-image-target="targetIndex: 0" class="clickable">
 
-        <!-- Change the src to the ID of the video element added in <a-assets> | Change the width and height as per the video ratio -->
-        <a-plane id="myVideoPlane" src="#myVideo" material="transparent: false; opacity: 0" position="0 0 0"
+        <!-- Change the src to the ID of the image element added in <a-assets> -->
+        <a-plane id="myImagePlane" src="#myImage" material="transparent: false; opacity: 1" position="0 0 0"
           width="1.025" height="1.025" rotation="0 0 0"
           animation="property: opacity; from: 0.0; to: 1.0; loop: false; dur: 500; autoplay: false; startEvents: bganimstart"></a-plane>
 
@@ -204,7 +202,7 @@
       console.log("Permissions Granted")
     }
 
-    document.getElementById('myVideo').autoplay = false;
+    document.getElementById('myImage').autoplay = false;
 
     var constraints = {
       video: true,
@@ -253,21 +251,18 @@
 
           document.getElementById('example-scanning-overlay').style.display = 'none'
           document.getElementById('scanText').style.display = 'none'
-          // Change the id of the video tag here
-          document.getElementById('myVideo').play()
 
-          // var executed = false;
+          // Show the image when the target is found
+          var executed = false;
           if (!executed) {
             executed = true;
-            document.getElementById('myVideoPlane').emit('bganimstart')
+            document.getElementById('myImagePlane').emit('bganimstart')
           }
 
         });
         this.el.addEventListener('targetLost', event => {
           console.log("target lost");
           document.getElementById('example-scanning-overlay').style.display = 'flex'
-          // Change the id of the video tag here
-          document.getElementById('myVideo').pause()
         });
       }
     });
