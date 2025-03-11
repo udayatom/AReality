@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Directions Example with Leaflet and OSRM</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.css" />
+    <style>
+        #map {
+            height: 600px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h2>Indoor Navigation with Directions</h2>
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-routing-machine/dist/leaflet-routing-machine.js"></script>
+
+    <script>
+        // Initialize the map centered on a location (example coordinates)
+        const map = L.map('map').setView([12.9654255, 77.7017253], 15); // Example: Coordinates for a place in NYC
+
+        // Add OpenStreetMap tiles
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        // Define starting and ending points (e.g., bedroom and kitchen)
+        const startLatLng = [12.9654255, 77.7017253];  // Bedroom (lat, long)
+        const endLatLng = [12.9653714, 77.7016989];    // Kitchen (lat, long)
+
+        // Add a marker for the starting point
+        L.marker(startLatLng).addTo(map).bindPopup("Bedroom").openPopup();
+
+        // Add a marker for the ending point
+        L.marker(endLatLng).addTo(map).bindPopup("Kitchen").openPopup();
+
+        // Use Leaflet Routing Machine to calculate and display the route
+        L.Routing.control({
+            waypoints: [
+                L.latLng(startLatLng),
+                L.latLng(endLatLng)
+            ],
+            routeWhileDragging: true  // Allows the route to update as you drag the waypoints
+        }).addTo(map);
+    </script>
+
+</body>
+
+</html>

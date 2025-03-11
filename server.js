@@ -7,9 +7,9 @@ const path = require("path");
 const app = express();
 
 // Your local IP address (e.g., 192.168.1.5)
-const localIP = '192.168.0.105';  // Replace with your actual IP address
-const port = 3000;  // Or any port you prefer
-
+//const localIP = '192.168.0.105';  // Replace with your actual IP address
+const localIP = "127.0.0.1";
+const port = 3000; // Or any port you prefer
 
 // Read SSL certificates
 const options = {
@@ -24,7 +24,6 @@ app.get("/", (req, res) => {
 });
 
 // Set up the HTTPS server to serve the app
-https.createServer(options, app).listen(port,localIP, () => {
+https.createServer(options, app).listen(port, localIP, () => {
   console.log(`Server running on https://${localIP}:${port}`);
-
 });
