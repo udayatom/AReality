@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive AR with MindAR</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        #ar-container {
+            width: 100%;
+            height: 100%;
+        }
+
+        #toggle-button {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            padding: 10px;
+            background: #3498db;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="ar-container"></div>
+    <button id="toggle-button">Toggle AR Model</button>
+
+    <script src="https://cdn.mindar-js.com/latest/mindar.js"></script>
+    <script>
+        // Initialize the MindAR scene
+        const mindar = new window.MindAR.MindARScene({
+            container: document.getElementById('ar-container'),
+            uiMode: 'none',  // Hides the UI elements
+            mindFileUrl: 'path_to_your_file.mind'  // Path to your .mind file
+        });
+
+        // Start AR scene
+        mindar.start();
+
+        // Example button to toggle visibility of the AR model
+        document.getElementById('toggle-button').addEventListener('click', () => {
+            mindar.toggleModelVisibility();  // Toggle visibility of the AR model when clicked
+        });
+
+        // Handle clicking on an AR model
+        mindar.on('modelClick', (event) => {
+            // Check if the clicked model matches a specific model name or condition
+            const modelName = event.model.name;  // The name of the clicked model
+            if (modelName === "3D_Model_Example") {
+                // Open a webpage when the model is clicked
+                window.open("https://example.com", "_blank");  // Opens the webpage in a new tab
+            }
+        });
+    </script>
+</body>
+
+</html>
