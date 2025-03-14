@@ -1,202 +1,191 @@
 <html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+    <link rel="icon" type="image/x-icon" href="./assets/favicon.ico" />
+    <title>Uday WebAR</title>
+    <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/dist/mindar-image.prod.js"></script>
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
+    <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>
 
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
-  <link rel="icon" type="image/x-icon" href="./assets/favicon.ico" />
-  <title>Uday WebAR</title>
-  <script src="https://cdn.jsdelivr.net/gh/hiukim/mind-ar-js@1.2.5/dist/mindar-image.prod.js"></script>
-  <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mind-ar@1.2.5/dist/mindar-image-aframe.prod.js"></script>
-  <script src="https://unpkg.com/aframe-chromakey-material/dist/aframe-chromakey-material.min.js"></script>
-
-  <style>
-    body {
-      margin: 0;
-      text-align: center;
-    }
-
-    .example-container {
-      overflow: hidden;
-      position: absolute;
-      width: 100%;
-      height: 100%;
-    }
-
-    #example-scanning-overlay {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 0;
-      bottom: 0;
-      background: transparent;
-      z-index: 2;
-    }
-
-    @media (min-aspect-ratio: 1/1) {
-      #example-scanning-overlay .inner {
-        width: 50vh;
-        height: 50vh;
+    <style>
+      body {
+        margin: 0;
+        text-align: center;
       }
-    }
-
-    @media (max-aspect-ratio: 1/1) {
-      #example-scanning-overlay .inner {
-        width: 80vw;
-        height: 80vw;
+      .example-container {
+        overflow: hidden;
+        position: absolute;
+        width: 100%;
+        height: 100%;
       }
-    }
+      #example-scanning-overlay {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        background: transparent;
+        z-index: 2;
+      }
+      @media (min-aspect-ratio: 1/1) {
+        #example-scanning-overlay .inner {
+          width: 50vh;
+          height: 50vh;
+        }
+      }
+      @media (max-aspect-ratio: 1/1) {
+        #example-scanning-overlay .inner {
+          width: 80vw;
+          height: 80vw;
+        }
+      }
+      #example-scanning-overlay .inner {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+        opacity: 0.75;
+        background:
+          linear-gradient(to right, white 10px, transparent 10px) 0 0,
+          linear-gradient(to right, white 10px, transparent 10px) 0 100%,
+          linear-gradient(to left, white 10px, transparent 10px) 100% 0,
+          linear-gradient(to left, white 10px, transparent 10px) 100% 100%,
+          linear-gradient(to bottom, white 10px, transparent 10px) 0 0,
+          linear-gradient(to bottom, white 10px, transparent 10px) 100% 0,
+          linear-gradient(to top, white 10px, transparent 10px) 0 100%,
+          linear-gradient(to top, white 10px, transparent 10px) 100% 100%;
+        background-repeat: no-repeat;
+        background-size: 40px 40px;
+      }
+      #example-scanning-overlay.hidden {
+        display: none;
+      }
+      #example-scanning-overlay img {
+        width: 70%;
+        align-self: center;
+      }
+      #example-scanning-overlay h3 {
+        display: block;
+        position: absolute;
+        font-size: medium;
+        top: 105%;
+        align-self: center;
+        color: white;
+      }
+      #cameraNotPermitted {
+        transform: translate(-50%, -50%);
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: auto;
+        height: 45%;
+        visibility: hidden;
+        z-index: 9999;
+      }
+      .container {
+        height: 100%;
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        position: relative;
+        align-items: center;
+        background-color: rgba(0, 0, 0, 0.5);
+        visibility: visible;
+        z-index: 999999;
+      }
+      h1 {
+        color: whitesmoke;
+      }
+    </style>
+  </head>
 
-    #example-scanning-overlay .inner {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      opacity: 0.75;
-
-      background:
-        linear-gradient(to right, white 10px, transparent 10px) 0 0,
-        linear-gradient(to right, white 10px, transparent 10px) 0 100%,
-        linear-gradient(to left, white 10px, transparent 10px) 100% 0,
-        linear-gradient(to left, white 10px, transparent 10px) 100% 100%,
-        linear-gradient(to bottom, white 10px, transparent 10px) 0 0,
-        linear-gradient(to bottom, white 10px, transparent 10px) 100% 0,
-        linear-gradient(to top, white 10px, transparent 10px) 0 100%,
-        linear-gradient(to top, white 10px, transparent 10px) 100% 100%;
-      background-repeat: no-repeat;
-      background-size: 40px 40px;
-    }
-
-    #example-scanning-overlay.hidden {
-      display: none;
-    }
-
-    #example-scanning-overlay img {
-      width: 70%;
-      align-self: center;
-    }
-
-    #example-scanning-overlay h3 {
-      display: block;
-      position: absolute;
-      font-size: medium;
-      top: 105%;
-      align-self: center;
-      color: white;
-    }
-
-    #cameraNotPermitted {
-      transform: translate(-50%, -50%);
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      width: auto;
-      height: 45%;
-      visibility: hidden;
-      z-index: 9999;
-    }
-
-    .container {
-      height: 100%;
-      width: 100%;
-      display: flex;
-      justify-content: center;
-      position: relative;
-      align-items: center;
-      background-color: rgba(0, 0, 0, 0.5);
-      visibility: visible;
-      z-index: 999999;
-    }
-
-    h1 {
-      color: whitesmoke;
-    }
-  </style>
-</head>
-
-<body>
-  <div id="startContainer" class="container" onclick="startAR()">
-    <h1 id="startText">Tap to Start</h1>
-  </div>
-
-  <div class="example-container">
-    <div id="example-scanning-overlay" class="hidden">
-      <div class="inner">
-        <h3 id="scanText">Scan this image to get started</h3>
-        <!-- <img src="./assets/google.png" />
-        <div class="scanline"></div> -->
-      </div>
+  <body>
+    <div id="startContainer" class="container" onclick="startAR()">
+      <h1 id="startText">Tap to Start</h1>
     </div>
-    <img id="cameraNotPermitted" src="./assets/CameraNotPermitted.png" />
 
-    <a-scene
-      mindar-image="imageTargetSrc: ./assets/google.mind; autoStart: true; showStats: false; uiScanning: #example-scanning-overlay; filterMinCF:0.0001; filterBeta: 0.001"
-      loading-screen="dotsColor: red; backgroundColor: black; enabled: false" gesture-detector color-space="sRGB"
-      renderer="colorManagement: true, physicallyCorrectLights, logarithmicDepthBuffer: true"
-      xr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+    <div class="example-container">
+      <div id="example-scanning-overlay" class="hidden">
+        <div class="inner">
+          <h3 id="scanText">Scan this image to get started</h3>
+        </div>
+      </div>
+      <img id="cameraNotPermitted" src="./assets/CameraNotPermitted.png" />
 
-      <a-assets>
-        <!-- Load the GIF image as a texture -->
-        <video id="greenscreenvideo" opacity="0" loop="true" autoplay playsinline webkit-playsinline
-          crossorigin="anonymous" muted="true"
-          src="https://static.vecteezy.com/system/resources/previews/033/345/505/mp4/colorful-smoke-splash-animation-effect-isolated-on-green-screen-background-free-video.mp4"></video>
-      </a-assets>
+      <a-scene
+        mindar-image="imageTargetSrc: ./assets/google.mind; autoStart: true; showStats: false; uiScanning: #example-scanning-overlay; filterMinCF:0.0001; filterBeta: 0.001"
+        loading-screen="dotsColor: red; backgroundColor: black; enabled: false" gesture-detector color-space="sRGB"
+        renderer="colorManagement: true, physicallyCorrectLights, logarithmicDepthBuffer: true"
+        xr-mode-ui="enabled: false" device-orientation-permission-ui="enabled: false">
+        
+        <a-assets>
+          <!-- Load the first video as a texture -->
+          <video id="greenscreenvideo" loop="true" autoplay playsinline webkit-playsinline crossorigin="anonymous" muted="true"
+            src="https://static.vecteezy.com/system/resources/previews/033/345/505/mp4/colorful-smoke-splash-animation-effect-isolated-on-green-screen-background-free-video.mp4"></video>
+          
+          <!-- Load the second video as a texture -->
+          <video id="video2" loop="true" autoplay playsinline webkit-playsinline crossorigin="anonymous" muted="true"
+            src="https://www.w3schools.com/html/mov_bbb.mp4"></video>
+        </a-assets>
 
-      </a-assets>
+        <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;" raycaster="far: 50; objects: .clickable"></a-camera>
 
-      <a-camera position="0 0 0" look-controls="enabled: false" cursor="fuse: false; rayOrigin: mouse;"
-        raycaster="far: 50; objects: .clickable"></a-camera>
+        <!-- First video plane -->
+        <a-entity id="aentity1" mytarget mindar-image-target="targetIndex: 0" class="clickable">
+          <a-video material="shader: chromakey; src: #greenscreenvideo; color: 0.1 0.9 0.2" position="0 0 0" rotation="0 0 0" scale="1 1 1"></a-video>
+        </a-entity>
 
-      <a-entity id="aentity" mytarget mindar-image-target="targetIndex: 0" class="clickable">
-        <!-- Use the GIF texture on a plane -->
-        <a-video material="shader: chromakey; src: #greenscreenvideo; color: 0.1 0.9 0.2" position="0 0 0"
-          rotation="0 0 0" scale="1 1 1"></a-video>
-      </a-entity>
-    </a-scene>
-  </div>
+        <!-- Second video plane -->
+        <a-entity id="aentity2" mytarget mindar-image-target="targetIndex: 1" class="clickable">
+          <a-video material="shader: chromakey; src: #video2; color: 0.1 0.9 0.2" position="3 0 0" rotation="0 0 0" scale="1 1 1"></a-video>
+        </a-entity>
+        
+      </a-scene>
+    </div>
 
-  <script>
-    const sceneEl = document.querySelector('a-scene');
-    let arSystem;
-    sceneEl.addEventListener('loaded', function () {
-      arSystem = sceneEl.systems["mindar-image-system"];
-      console.log('Loaded');
-    });
+    <script>
+      const sceneEl = document.querySelector('a-scene');
+      let arSystem;
+      sceneEl.addEventListener('loaded', function () {
+        arSystem = sceneEl.systems["mindar-image-system"];
+        console.log('Loaded');
+      });
 
-    // Camera permission check
-    var constraints = { video: true, audio: false };
-    setInterval(function () {
-      navigator.permissions.query({ name: 'camera' }).then(function (result) {
-        if (result.state === 'denied') {
-          document.getElementById('cameraNotPermitted').style.visibility = 'visible';
-          setTimeout(function () { window.location.reload(); }, 5000);
+      // Camera permission check
+      var constraints = { video: true, audio: false };
+      setInterval(function () {
+        navigator.permissions.query({ name: 'camera' }).then(function (result) {
+          if (result.state === 'denied') {
+            document.getElementById('cameraNotPermitted').style.visibility = 'visible';
+            setTimeout(function () { window.location.reload(); }, 5000);
+          }
+        });
+      }, 1000);
+
+      // Start AR on tap
+      function startAR() {
+        document.getElementById('startContainer').style.display = "none";
+      }
+
+      AFRAME.registerComponent('mytarget', {
+        init: function () {
+          this.el.addEventListener('targetFound', event => {
+            console.log("Target found");
+            document.getElementById('example-scanning-overlay').style.display = 'none';
+            document.getElementById('scanText').style.display = 'none';
+          });
+          this.el.addEventListener('targetLost', event => {
+            console.log("Target lost");
+            document.getElementById('example-scanning-overlay').style.display = 'flex';
+          });
         }
       });
-    }, 1000);
-
-    // Start AR on tap
-    function startAR() {
-      document.getElementById('startContainer').style.display = "none";
-    }
-
-    AFRAME.registerComponent('mytarget', {
-      init: function () {
-        this.el.addEventListener('targetFound', event => {
-          console.log("Target found");
-          document.getElementById('example-scanning-overlay').style.display = 'none';
-          document.getElementById('scanText').style.display = 'none';
-        });
-        this.el.addEventListener('targetLost', event => {
-          console.log("Target lost");
-          document.getElementById('example-scanning-overlay').style.display = 'flex';
-        });
-      }
-    });
-  </script>
-</body>
-
+    </script>
+  </body>
 </html>
